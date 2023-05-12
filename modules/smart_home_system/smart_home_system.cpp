@@ -23,6 +23,12 @@
 
 //=====[Declaration of external public global variables]=======================
 
+// aca queremos prender y apagar un led sin usar las interrupciones
+static int tickcounter = 0;
+static int dutycycle = 3; //30ms
+DigitalOut led_aux(D7);
+
+
 //=====[Declaration and initialization of public global variables]=============
 
 //=====[Declaration and initialization of private global variables]============
@@ -41,7 +47,9 @@ void smartHomeSystemInit()
     motorControlInit();
     gateInit();
     lightSystemInit();
+    led_aux =  ON;
 }
+
 
 void smartHomeSystemUpdate()
 {
@@ -54,6 +62,18 @@ void smartHomeSystemUpdate()
     motorControlUpdate();
     lightSystemUpdate();
     delay(SYSTEM_TIME_INCREMENT_MS);
+
+    // un led que se prende a lo bruto
+    // Esto tiene la contra de que es muy dependiente del resto del código 
+    //y no es preciso
+    //es por etso que es mas comodo y seguro usar interrupciones, y pwm para mas precision
+    tickcounter++;
+    if (tickcounter > dutycycle) { // paso 0.03 segundos
+        led_aux =  OFF;
+        if (tickcounter == 10)  tickcounter = 0;
+    } else {
+        led_aux =  ON;
+    }
 }
 
 //=====[Implementations of private functions]==================================
